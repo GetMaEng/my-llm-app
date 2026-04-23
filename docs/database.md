@@ -91,3 +91,10 @@ export default async function Page() {
   );
 }
 ```
+
+## 7. .env Setup
+Create `.env` file on your project directory
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/my-llm-app
+```
