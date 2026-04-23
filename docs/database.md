@@ -10,7 +10,7 @@ In this project, we will use Drizzle ORM with Next.js involves installing the co
 
 Read more - [https://orm.drizzle.team/docs/overview](https://orm.drizzle.team/docs/overview)
 
-## Install Dependencies
+## 1. Install Dependencies
 
 Install the Drizzle ORM and its companion CLI, [Drizzle Kit](https://orm.drizzle.team/docs/kit-overview), along with the appropriate database driver (e.g., PostgreSQL, MySQL, or SQLite).
 
@@ -20,7 +20,7 @@ npm install drizzle-orm pg
 npm install -D drizzle-kit @types/pg
 ```
 
-## Configure Drizzle Kit
+## 2. Configure Drizzle Kit
 
 Create a `drizzle.config.ts` file in your project root to specify your schema path and database connection details.
 
@@ -37,7 +37,7 @@ export default defineConfig({
 });
 ```
 
-## Define Your Schema
+## 3. Define Your Schema
 Create a schema file (e.g., `src/db/schema.ts`) to define your database tables using TypeScript.
 
 ```typescript
@@ -50,7 +50,7 @@ export const users = pgTable("users", {
 });
 ```
 
-## Initialize the Client
+## 4. Initialize the Client
 
 Create a database instance in `src/db/index.ts` to use throughout your Next.js App Router components or Server Actions.
 
@@ -65,13 +65,13 @@ const pool = new Pool({
 export const db = drizzle(pool);
 ```
 
-## Synchroize the Database
+## 5. Synchroize the Database
 
 Use Drizzle Kit to push your schema changes to the database or generate migration files.
 - **Quick Sync:** `npx drizzle-kit push` (best for rapid prototyping).
 - **Migrations:** `npx drizzle-kit generate` followed by `npx drizzle-kit migrate` (best for production).
 
-## Usage in Next.js
+## 6. Usage in Next.js
 
 You can now import the `db` instance into your Next.js pages or Server Actions.
 
