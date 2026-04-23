@@ -1,4 +1,4 @@
-## What is LangChain
+# What is LangChain
 
 **LangChain** is an open-source framework designed to simplify the development of applications using Large Language Models (LLMs) such as OpenAI's GPT, Google's Gemini, or Anthropic's Claude. 
 
@@ -18,7 +18,7 @@ LangChain offers components that developers can combine to create complex workfl
 - **Efficiency:** It provides pre-built components for common AI tasks, reducing the manual code needed to build applications.
 - **Integration Ecosystem:** It has over 1,000 integrations with various tools, databases, and model providers.
 
-# 1. Install LangChain
+## 1. Install LangChain
 
 To install the LangChain package:
 
