@@ -1,0 +1,10 @@
+services:
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    ports:
+      - '5432:5432'             # Maps host port 5432 to container port 5432
+    environment:
+      POSTGRES_USER: user        # Your database superuser
+      POSTGRES_PASSWORD: password # Your database password
+      POSTGRES_DB: my-llm-app      # Name of the initial database
