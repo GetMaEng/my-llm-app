@@ -8,7 +8,7 @@ function FormRegister() {
     <div className='h-screen bg-gray-100 flex justify-center items-center'>
         <div className='w-100 h-165 p-5 bg-white rounded-xl shadow-lg flex flex-col items-center'>
             <form action="" className='w-full'>
-                <header className='text-3xl text-center font-bold my-10'>
+                <header className='text-3xl text-center font-bold my-5'>
                     <h1>Register</h1>
                 </header>
                 <section className='w-full'>
