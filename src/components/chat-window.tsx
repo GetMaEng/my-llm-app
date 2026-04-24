@@ -1,7 +1,7 @@
 'use client'
 
-import { useRef, useState, useEffect, useCallback } from "react";
-import { IconPlus, IconUserCircle } from '@tabler/icons-react'
+import { useState, useEffect, useCallback } from "react";
+import { IconPlus, IconUserCircle, IconTrash } from '@tabler/icons-react'
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, UIMessage } from "ai";
 
@@ -22,7 +22,6 @@ interface ChatAreaProps {
 function ChatArea({ sessionId, userId, initialMessages, onMessageComplete }: ChatAreaProps) {
 
   const [input, setInput] = useState("");
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const { messages, sendMessage, status, error, stop,} = useChat({
     id: sessionId,
@@ -41,7 +40,7 @@ function ChatArea({ sessionId, userId, initialMessages, onMessageComplete }: Cha
       onMessageComplete();
     },
     onError: (err) => {
-      console.error('[ChatV19] Error:', err);
+      console.error('[Chat] Error:', err);
     },
   });
 
@@ -77,7 +76,7 @@ function ChatArea({ sessionId, userId, initialMessages, onMessageComplete }: Cha
             ====================================*/}
             <div className="h-full flex-1 p-2 mb-2 space-y-2 overflow-y-scroll scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100">
                 {messages.length === 0 && (
-                    <p className="text-center py-4 text-xs font-bold">
+                    <p className="text-center py-4 text-sm font-bold">
                         No messages yet. Start a conversation!
                     </p>
                 )}
@@ -85,18 +84,18 @@ function ChatArea({ sessionId, userId, initialMessages, onMessageComplete }: Cha
                     const content = getMessageContent(message);
                     return (
                         <div key={message.id} className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                            <div className={`max-w-[85%] sm:max-w-[75%] p-2 sm:p-3 rounded-lg ${
+                            <div className={`max-w-[85%] p-2 rounded-lg ${
                                 message.role === 'user'
                                     ? 'bg-muted rounded-br-none'
                                     : 'rounded-bl-none'
                                 }`}
                             >
-                                <div className="font-semibold mb-1 text-[10px] sm:text-xs">
+                                <div className="font-semibold mb-1 text-[10px]">
                                 {message.role === 'user' ? 'You' : 'Assistant'}
                                 </div>
-                                <div className="whitespace-pre-wrap text-xs sm:text-sm">
+                                <div className="whitespace-pre-wrap text-sm">
                                 {content || (
-                                    <span className="inline-flex items-center gap-1 text-muted-foreground">
+                                    <span className="inline-flex items-center gap-1">
                                     <span className="animate-pulse">.</span>
                                     <span className="animate-pulse delay-100">.</span>
                                     <span className="animate-pulse delay-200">.</span>
@@ -107,18 +106,17 @@ function ChatArea({ sessionId, userId, initialMessages, onMessageComplete }: Cha
                         </div>
                     );
                 })}
+                {/* Status indicator */}
+                {status === 'streaming' && (
+                    <div className="flex items-center gap-2 mb-2 text-xs">
+                    <span className="animate-pulse">.</span>
+                    <span>AI is typing...</span>
+                    <button onClick={() => stop()} className="hover:underline">
+                        Stop
+                    </button>
+                    </div>
+                )}
             </div>
-
-            {/* Status indicator */}
-            {status === 'streaming' && (
-                <div className="flex items-center gap-2 mb-2 text-xs text-muted-foreground">
-                <span className="animate-pulse">.</span>
-                <span>AI is typing...</span>
-                <button onClick={() => stop()} className="text-destructive hover:underline">
-                    Stop
-                </button>
-                </div>
-            )}
         </div>
         {/* Input Form */}
         <form onSubmit={handleSubmit} className='flex px-3 py-2 justify-between bg-white rounded-xl shadow-lg'>
@@ -134,7 +132,11 @@ function ChatArea({ sessionId, userId, initialMessages, onMessageComplete }: Cha
 }
 
 function ChatWindow({email, id}: {email: string, id: number}) {
-    let mockData = [];
+    
+
+    const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+    let mockData: string[] = [];
     for (let i = 1; i <= 11; i++) {
         mockData[i] = "Chat-History " + i;
     }
@@ -262,10 +264,24 @@ function ChatWindow({email, id}: {email: string, id: number}) {
                     </div>
                 </header>
                 <div className={`h-100 ${mockData.length >= 12 ? 'overflow-y-scroll scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100' : ''}`}>
-                {mockData.map((data) => (
+                {mockData.map((data, index) => (
                     <>
-                    <div className=''>
-                        <button className='w-full flex px-3 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-600'>{data}</button>
+                    <div key={index}>
+                        <button 
+                        className={`w-full flex justify-between gap-10 items-center px-3 py-2 cursor-pointer hover:bg-gray-100 hover:text-blue-600
+                            ${selectedIndex === index
+                            ? "bg-gray-100 text-blue-600"
+                            : "hover:bg-gray-100 hover:text-blue-600"}
+                            `}
+                        onMouseEnter={() => setHoveredIndex(index)}
+                        onMouseLeave={() => setHoveredIndex(null)}
+                        onClick={() => setSelectedIndex(index)}
+                        >
+                            <span>{data}</span>
+                            {hoveredIndex === index && (
+                                <IconTrash size={20} className=" text-gray-400 hover:text-red-500" />
+                            )}
+                        </button>
                     </div>
                     </>
                 ))}
