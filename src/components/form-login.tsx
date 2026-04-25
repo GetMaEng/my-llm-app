@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { z } from "zod";
 import { useState } from "react";
+import { redirect } from 'next/navigation';
 
 function FormLogin() {
 
@@ -17,7 +18,7 @@ function FormLogin() {
         password: z.string().min(6, {message: 'Password must be at least 6 characters.'})
     });
     
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
         const email = formData.get('email') as string;
@@ -34,7 +35,24 @@ function FormLogin() {
         }
 
         setErrors({}); // clear errors
-        console.log('success', email, password);
+        
+        const res = await fetch("/api/auth/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email, password })
+        })
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            setErrors({ password: [data.error] });
+            return;
+        }
+
+        console.log("Logged in successfully");
+
+        redirect("/chat-window");
+        
     };
 
   return (

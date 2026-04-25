@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { IconPlus, IconUserCircle, IconTrash } from '@tabler/icons-react'
+
 import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport, UIMessage } from "ai";
+import { redirect } from "next/navigation";
 
 interface ChatHistoryItem {
   sessionId: string;
@@ -132,7 +134,6 @@ function ChatArea({ sessionId, userId, initialMessages, onMessageComplete }: Cha
 }
 
 function ChatWindow({email, id}: {email: string, id: number}) {
-    
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -246,6 +247,16 @@ function ChatWindow({email, id}: {email: string, id: number}) {
         }
     }, [currentSessionId]);
 
+    // ============================================================================
+    // LOGOUT ACCOUT
+    // ============================================================================
+    const handleLogout = () => {
+        fetch('/api/auth/logout', {
+            method: 'POST'
+        });
+        redirect('/login');
+    }
+
   return (
     <>
     <div className='h-screen bg-gray-100 flex justify-evenly items-center'>
@@ -291,7 +302,7 @@ function ChatWindow({email, id}: {email: string, id: number}) {
                         <IconUserCircle></IconUserCircle>
                         <p>Username</p>
                     </div>
-                    <button className='bg-blue-500 text-white text-xs font-bold px-3 py-2 rounded-lg cursor-pointer hover:bg-blue-600'>Log out</button>
+                    <button onClick={handleLogout} className='bg-blue-500 text-white text-xs font-bold px-3 py-2 rounded-lg cursor-pointer hover:bg-blue-600'>Log out</button>
                 </div>
             </div>
         </section>
