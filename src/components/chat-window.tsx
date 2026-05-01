@@ -133,7 +133,7 @@ function ChatArea({ sessionId, userId, initialMessages, onMessageComplete }: Cha
     </section>);
 }
 
-function ChatWindow({email, id}: {email: string, id: number}) {
+function ChatWindow({username, id}: {username: string, id: number}) {
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -141,6 +141,10 @@ function ChatWindow({email, id}: {email: string, id: number}) {
     for (let i = 1; i <= 11; i++) {
         mockData[i] = "Chat-History " + i;
     }
+
+    // ============================================================================
+    // MAIN COMPONENT
+    // ============================================================================
 
     const [chatHistories, setChatHistories] = useState<ChatHistoryItem[]>([]);
     const [currentSessionId, setCurrentSessionId] = useState<string>('');
@@ -209,6 +213,7 @@ function ChatWindow({email, id}: {email: string, id: number}) {
         const newSessionId = crypto.randomUUID?.() || `${Date.now()}`;
         setInitialMessages([]);
         setCurrentSessionId(newSessionId);
+        console.log(newSessionId);   
     }, []);
 
     // ============================================================================
@@ -241,7 +246,7 @@ function ChatWindow({email, id}: {email: string, id: number}) {
             setCurrentSessionId(sessionId);
         }
         } catch (error) {
-        console.error('[ChatV19] Failed to load session:', error);
+        console.error('[Chat] Failed to load session:', error);
         } finally {
         setLoadingSession(false);
         }
@@ -268,14 +273,17 @@ function ChatWindow({email, id}: {email: string, id: number}) {
                 <header className='border-b-1 pb-4 border-gray-300'>
                     <h1 className='text-2xl font-bold mb-5'>CHAT AI</h1>
                     <div className='flex justify-center'>
-                        <button className='flex justify-center gap-3 bg-blue-500 text-white font-bold px-15 py-3 rounded-3xl cursor-pointer hover:bg-blue-600'>
+                        <button 
+                        className='flex justify-center gap-3 bg-blue-500 text-white font-bold px-15 py-3 rounded-3xl cursor-pointer hover:bg-blue-600'
+                        onClick={createNewSession}
+                        >
                             <IconPlus></IconPlus>
                             New chat
                         </button>
                     </div>
                 </header>
                 <div className={`h-100 ${mockData.length >= 12 ? 'overflow-y-scroll scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100' : ''}`}>
-                {mockData.map((data, index) => (
+                {chatHistories.map((history, index) => (
                     <>
                     <div key={index}>
                         <button 
@@ -286,11 +294,14 @@ function ChatWindow({email, id}: {email: string, id: number}) {
                             `}
                         onMouseEnter={() => setHoveredIndex(index)}
                         onMouseLeave={() => setHoveredIndex(null)}
-                        onClick={() => setSelectedIndex(index)}
+                        onClick={() => {
+                            setSelectedIndex(index);
+                            loadSession(history.sessionId);
+                        }}
                         >
-                            <span>{data}</span>
+                            <span>{history.preview || "New Chat"}</span>
                             {hoveredIndex === index && (
-                                <IconTrash size={20} className=" text-gray-400 hover:text-red-500" />
+                                <IconTrash onClick={(e) => {e.stopPropagation(); deleteChatHistory(history.sessionId)}} size={20} className=" text-gray-400 hover:text-red-500" />
                             )}
                         </button>
                     </div>
@@ -300,7 +311,7 @@ function ChatWindow({email, id}: {email: string, id: number}) {
                 <div className='w-full border-t-1 flex justify-evenly pt-4 border-gray-300'>
                     <div className='flex items-center gap-2'>
                         <IconUserCircle></IconUserCircle>
-                        <p>Username</p>
+                        <p>{username}</p>
                     </div>
                     <button onClick={handleLogout} className='bg-blue-500 text-white text-xs font-bold px-3 py-2 rounded-lg cursor-pointer hover:bg-blue-600'>Log out</button>
                 </div>
@@ -309,15 +320,23 @@ function ChatWindow({email, id}: {email: string, id: number}) {
         {/*======================================
                     Main Chat Area
         ========================================*/}
+       {!isClient || !currentSessionId || loadingSession ? (
+        <div className="flex items-center justify-center w-200">
+            <span className="text-muted-foreground">
+            {loadingSession ? 'Loading session...' : 'Initializing...'}
+            </span>
+        </div>
+        ) : (
         <ChatArea
             key={currentSessionId}
             sessionId={currentSessionId}
             userId={id.toString()}
             initialMessages={initialMessages}
             onMessageComplete={() => {
-                setTimeout(() => fetchChatHistories(), 1000);
+            setTimeout(() => fetchChatHistories(), 1000);
             }}
         />
+        )}
     </div>
     </>
   )

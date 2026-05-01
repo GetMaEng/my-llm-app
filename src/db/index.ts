@@ -5,4 +5,8 @@ const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
+// Create Drizzle instance with schema
 export const db = drizzle(pool);
+
+// Export pool for direct access if needed
+export { pool }

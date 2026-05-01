@@ -3,9 +3,6 @@ import { redirect } from "next/navigation";
 import { getServerUser } from '@/src/lib/auth/server';
 
 async function page() {
-    const email = 'user@example.com';
-    const id = 1;
-
     const user = await getServerUser();
     
     if (!user) {
@@ -14,7 +11,7 @@ async function page() {
 
   return (
     <>
-    <ChatWindow email={email} id={id}></ChatWindow>
+    <ChatWindow username={user.username} id={user.id}></ChatWindow>
     </>
   )
 }

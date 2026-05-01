@@ -11,6 +11,7 @@
   "dependencies": {
     "@ai-sdk/langchain": "^2.0.174",
     "@ai-sdk/react": "^3.0.170",
+    "@langchain/community": "^1.1.27",
     "@langchain/core": "^1.1.41",
     "@langchain/ollama": "^1.2.6",
     "@tabler/icons-react": "^3.41.1",
@@ -21,7 +22,7 @@
     "pg": "^8.20.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
-    "zod": "^4.3.6"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
