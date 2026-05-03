@@ -8,3 +8,13 @@ services:
       POSTGRES_USER: user        # Your database superuser
       POSTGRES_PASSWORD: password # Your database password
       POSTGRES_DB: my-llm-app      # Name of the initial database
+  qdrant:
+      image: qdrant/qdrant:latest
+      container_name: qdrant_my_llam
+      ports:
+        - "6333:6333"   # REST API
+        - "6334:6334"   # gRPC (optional)
+      volumes:
+        - qdrant_data:/qdrant/storage
+volumes:
+  qdrant_data:

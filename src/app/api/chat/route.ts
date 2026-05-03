@@ -8,6 +8,7 @@ import { PostgresChatMessageHistory } from "@langchain/community/stores/message/
 import pg from "pg";
 import { pool } from "@/src/db";
 import { getServerUser } from "@/src/lib/auth/server";
+import { searchKnowledgeBaseTool } from "@/src/lib/llm-tools";
 
 const llm = new ChatOllama({
     model: "scb10x/typhoon2.5-qwen3-4b:latest",
@@ -78,6 +79,8 @@ export async function POST(req: NextRequest) {
 
     const agent = createAgent({
         model: llm,
+        tools: [searchKnowledgeBaseTool],
+        systemPrompt: process.env.SYSTEM_PROMPT,
     })
 
     // Load Chat History
