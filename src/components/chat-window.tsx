@@ -137,10 +137,6 @@ function ChatWindow({username, id}: {username: string, id: number}) {
 
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
-    let mockData: string[] = [];
-    for (let i = 1; i <= 11; i++) {
-        mockData[i] = "Chat-History " + i;
-    }
 
     // ============================================================================
     // MAIN COMPONENT
@@ -282,7 +278,7 @@ function ChatWindow({username, id}: {username: string, id: number}) {
                         </button>
                     </div>
                 </header>
-                <div className={`h-100 ${mockData.length >= 12 ? 'overflow-y-scroll scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100' : ''}`}>
+                <div className={`h-100 ${chatHistories.length >= 12 ? 'overflow-y-scroll scrollbar-thin scrollbar-thumb-blue-500 scrollbar-track-blue-100' : ''}`}>
                 {chatHistories.map((history, index) => (
                     <>
                     <div key={index}>
