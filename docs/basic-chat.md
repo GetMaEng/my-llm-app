@@ -128,7 +128,6 @@ Create file: `app/chat-window/page.ts`
 import ChatWindow from "../../components/chat-window";
 
 function page() {
-    const user = await getServerUser();
 
   return (
     <>
