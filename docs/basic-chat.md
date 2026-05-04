@@ -7,6 +7,7 @@ Minimal flow to build a basic chat application using LangChain and the Vercel AI
 ## 1. Create API Route (Backend Logic)
 
 Create file: `app/api/chat/route.ts`
+To call `ChatOllama` you need install ollama on your device and download model you want
 
 ### Basic using LangChain + AI SDK
 
