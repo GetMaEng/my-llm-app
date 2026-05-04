@@ -1,13 +1,23 @@
+// Import from langchain
+import { createAgent, BaseMessage, AIMessage } from "langchain";
 import { ChatOllama } from "@langchain/ollama"
+import { PostgresChatMessageHistory } from "@langchain/community/stores/message/postgres";
+
+// Import from AI-SDK
 import { createUIMessageStreamResponse, UIMessage } from "ai"
 import { toBaseMessages, toUIMessageStream } from '@ai-sdk/langchain';
-import { createAgent, BaseMessage, AIMessage } from "langchain";
+
+// Import from Next
 import { NextRequest } from "next/server"
 
-import { PostgresChatMessageHistory } from "@langchain/community/stores/message/postgres";
+// Import pg
 import pg from "pg";
+
+// Import from server
 import { pool } from "@/src/db";
 import { getServerUser } from "@/src/lib/auth/server";
+
+// Import tools
 import { searchKnowledgeBaseTool } from "@/src/lib/llm-tools";
 
 const llm = new ChatOllama({
@@ -34,7 +44,7 @@ class UserAwarePostgresChatMessageHistory extends PostgresChatMessageHistory {
   }
 
   /**
-   * Override addMessage เพื่อเพิ่ม user_id ลงใน record
+   * Override addMessage for add user_id into record
    */
   async addMessage(message: BaseMessage): Promise<void> {
     await super.addMessage(message);
@@ -56,7 +66,7 @@ class UserAwarePostgresChatMessageHistory extends PostgresChatMessageHistory {
   }
 }
 
-// สร้าง Chat history instance
+// Creates Chat history instance
 function getHistory(sessionId: string, userId: string) {
     return new UserAwarePostgresChatMessageHistory({
         sessionId: sessionId,
@@ -90,14 +100,14 @@ export async function POST(req: NextRequest) {
     // Convert AI SDK UIMessages to LangChain messages
     //const langchainMessages = await toBaseMessages(messages);
 
-    // บันทึกเฉพาะข้อความล่าสุดของผู้ใช้ เพื่อไม่ให้ history ซ้ำ
+    // Records only latest message of user for not duplicate history
     const lastUserUiMessage = [...messages].reverse().find((message) => message.role === 'user');
     const [lastUserMessage] = lastUserUiMessage ? await toBaseMessages([lastUserUiMessage]) : [];
     if (lastUserMessage) {
         await historyStore.addMessage(lastUserMessage);
     }
 
-    // ใช้ history จาก DB + ข้อความล่าสุดของผู้ใช้เป็น context ก่อนส่งให้กับ Agent
+    // Uses history from DB + latest message of user for context before send it to Agent
     const allMessages = lastUserMessage ? [...chatHistory, lastUserMessage] : chatHistory;
 
     const result = agent.streamEvents(

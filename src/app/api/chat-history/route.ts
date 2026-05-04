@@ -15,9 +15,7 @@ export async function GET() {
 
         const userId = user.id.toString();
 
-        // ดึง chat history grouped by session_id พร้อม last message และ count
-        // กรองด้วย user_id แทนการใช้ session_id pattern
-        // นับเฉพาะ human และ ai messages (ไม่นับ tool messages)
+        // Retrieves chat history grouped by seesion_id with last message
         const histories = await db
             .select({
                 sessionId: chatHistoriesTable.sessionId,
@@ -36,7 +34,7 @@ export async function GET() {
             .orderBy(desc(sql`MAX(${chatHistoriesTable.createdAt})`))
             .limit(10);
 
-        // Parse last message เพื่อดึง text content
+        // Parse last message for retrieve text content
         const formattedHistories = histories.map(h => {
             try {
                 const msg = JSON.parse(h.lastMessage || '{}');
@@ -67,7 +65,7 @@ export async function GET() {
     }
 }
 
-// DELETE endpoint สำหรับลบ chat history
+// DELETE endpoint for delete chat history
 export async function DELETE(req: NextRequest) {
     try {
         const user = await getServerUser();
@@ -82,7 +80,7 @@ export async function DELETE(req: NextRequest) {
             return NextResponse.json({ error: 'Session ID required' }, { status: 400 });
         }
 
-        // ลบ chat history ของ session นั้น (ต้องเป็นของ user คนนี้เท่านั้น)
+        // Delete chat history of this session (Must belong to this user only)
         await db
             .delete(chatHistoriesTable)
             .where(sql`session_id = ${sessionId} AND user_id = ${userId}`);
